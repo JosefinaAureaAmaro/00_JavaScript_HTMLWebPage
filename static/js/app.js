@@ -26,7 +26,7 @@ let dataKeys = Object.keys(tableData[0]);
 console.log(dataKeys);
 
 
-  var placeholders = ['1/11/2010','san diego', 'ca','us','sphere', '20 minutes']
+  var placeholders = ['1/1/2010','bonita', 'ca','us','light', '13 minutes']
   for (i = 0; i <= dataKeys.length -2 ; i++) { 
       var liFilter = filterform.append("li").classed("filter list-group-item",true);
       var labelFilter = liFilter.append("label").attr("for", `${dataKeys[i]}`);
@@ -35,46 +35,90 @@ console.log(dataKeys);
 /////// end - create filter form //////////
 
 
+//data keys check
+console.log(`data keys = ${dataKeys.length}`);
+console.log(`data keys -1 = ${dataKeys.length - 1}`);
 
 /////////////////// filter button ////////////////////
+
+var filteredData = tableData;
+
 function ButtonClick() {
   console.log('button clicked');
-  let filteredData = tableData;
 
- 
-  
+  //variables 
+  var inputList = [];
+  var defineditems = []; 
+  var k = -1; // to use for defined items variable
+  var arrayofIndexValues = []; 
 
-  let inputList = [];
-  let inputValueDate = d3.select("#datetime").property("value").trim();
+  /**************/
 
+  // create input list values from filter form//
 
+  // create date item in input list
+  var inputValueDate = d3.select("#datetime").property("value").trim();
   inputList[0] = inputValueDate;
 
+  // create all other fields in input list with the .toLowerCase function 
   for (i = 1; i <= dataKeys.length -2 ; i++) {
-    inputList[i] = d3.select('#'+`${dataKeys[i]}`).property("value").trim().toLowerCase();
+    inputList[i] = d3.select('#'+`${dataKeys[i]}`).property("value").trim().toLowerCase()};
+
+  console.log(inputList);
+
+  // end - create input list
+
+
+  // to iterate through input list and through objects
+  for (i = 0; i <= dataKeys.length -2 ; i++) {
+
+
+    // input list is an array that holds the input values given by the user
+    console.log(inputList); // to make sure inputList is still recognized
+
+    function testInput(i) { // if a inputvalue is falsey the i will skip to the next item in the nested object to compare
+      while (i <= 5){
+      if (inputList[i] !== "" || undefined) {
+        console.log(`k equals: ${k = k + 1}`);  // to show list index values
+        console.log(`variable i defined: ${i}`); // to show i values
+        console.log(`input value ${inputList[i]}`) // to show input item
+        defineditems[k] = i; // to store undefined into values into a list
+        return i = i; } 
+      else {
+        console.log(`variable i undefined: ${inputList[i]}`);
+        return i = i + 1;
+      }
+    }
+  }; // expect output: variable i per conditions
+  testInput(i); // to run function and store i -- not useful beyond this point 
+  console.log(`array of defined indexes: ${arrayofIndexValues = new Array(defineditems)}`);
+
+  // we need to create a new array of index values that are defined
+  //by holding the index of the values that are defined, we can iterate through that for the final filtered Data
+}
+  console.log(`array of input: ${arrayofIndexValues}`); // new array iterate variable per conditions 
+  
+  for (a = 0; a <= arrayofIndexValues.length ; a++) { // we need the loop for when there is more than 1 value in the array
+    console.log(arrayofIndexValues[a]);
+    var placementvalue = arrayofIndexValues[a]; // placement value takes the index of the 'arrayofindexvalues' that were defined and uses it in the filter. 
+    console.log(filteredData = filteredData.filter(obj => obj[Object.keys(obj)[placementvalue]] === inputList[placementvalue]))
   }
 
-  console.log(inputList); 
-
-  filteredData = filteredData.filter( row => {
-    if (
-    (row.datetime === inputList[0] || inputList[0] === "") &&
-    (row.city === inputList[1] || inputList[1] === "") &&
-    (row.state === inputList[2] || inputList[2] === "") &&
-    (row.country === inputList[3] || inputList[3] === "") &&
-    (row.shape === inputList[4] || inputList[4] === "") &&
-    (row.durationMinutes === inputList[5] || inputList[5] === "")
-  ) {return true;}
-  return false; 
-});
-
-  // use the generateTable function to make a new table
+  console.log(filteredData);
+  console.log('next item!')
   generateTable(filteredData);
 
-}
+  console.log("data filtered")
+}; 
 
-//reference button on page
-d3.selectAll("#filter-btn").on("click", ButtonClick);
+ 
+  //reference button on page
+  d3.selectAll("#filter-btn").on("click", ButtonClick);
+
+  // Filter logic: For each object withtin Data filter keys per the following logic: 
+  // 1. If given a value for object[0] return filtered data
+  // 2. If given a value for object[0] is empty return origin Data
+  // 3. Move onto the next key for the Object and provide the hierachy. 
 
 ///////////////// end - filter button ///////////////
 
@@ -104,7 +148,7 @@ console.log('Hi user');
   var List =  object1.map((item) => item[Object.keys(item)[0]]);
   //Useful for using a list item as a 
 
-
+  length starts at 1 not 0 
 
      // to create a new data table for the filtered values 
     columnSelection = columnSelection.filter(row => row.datetime === dateFilterButtonVal);
