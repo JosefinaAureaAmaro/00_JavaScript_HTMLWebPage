@@ -28,9 +28,21 @@ console.log(dataKeys);
 
   var placeholders = ['1/1/2010','bonita', 'ca','us','light', '13 minutes']
   for (i = 0; i <= dataKeys.length -2 ; i++) { 
-      var liFilter = filterform.append("li").classed("filter list-group-item",true);
-      var labelFilter = liFilter.append("label").attr("for", `${dataKeys[i]}`);
-      labelFilter.append("input").classed("form-control", true).attr("id",`${dataKeys[i]}`).attr("type","text").attr("placeholder",`${placeholders[i]}`)
+
+      //to append list items to filter form
+      var liFilter = filterform.append("li")
+                               .classed("filter list-group-item",true);
+
+      //to define li elements with a label                        
+      var labelFilter = liFilter.append("label")
+                                .attr("for", `${dataKeys[i]}`);
+      
+                                // to append input into label per li element
+      labelFilter.append("input")
+                 .classed("form-control", true)
+                 .attr("id",`${dataKeys[i]}`)
+                 .attr("type","text")
+                 .attr("placeholder",`${placeholders[i]}`);
  };
 /////// end - create filter form //////////
 
@@ -41,73 +53,80 @@ console.log(`data keys -1 = ${dataKeys.length - 1}`);
 
 /////////////////// filter button ////////////////////
 
-var filteredData = tableData;
 
 function ButtonClick() {
   console.log('button clicked');
 
+  
+  var filteredData = tableData;
   //variables 
   var inputList = [];
-  var defineditems = []; 
-  var k = -1; // to use for defined items variable
-  var arrayofIndexValues = []; 
-
+  var defineditems = [];
+  
   /**************/
 
   // create input list values from filter form//
-
   // create date item in input list
   var inputValueDate = d3.select("#datetime").property("value").trim();
   inputList[0] = inputValueDate;
-
   // create all other fields in input list with the .toLowerCase function 
   for (i = 1; i <= dataKeys.length -2 ; i++) {
-    inputList[i] = d3.select('#'+`${dataKeys[i]}`).property("value").trim().toLowerCase()};
-
+    inputList[i] = d3.select('#'+`${dataKeys[i]}`).property("value").trim().toLowerCase()
+  };
   console.log(inputList);
-
   // end - create input list
 
+ // to generate original table when all filter fields are blank
+  function isBlank( element, index, array) {
+    return (element === "" || undefined); 
+  }
+
+  if (inputList.every(isBlank) === true) {
+    console.log("Reload Page!")
+    location.reload(); 
+  };
+  
 
   // to iterate through input list and through objects
   for (i = 0; i <= dataKeys.length -2 ; i++) {
 
-
-    // input list is an array that holds the input values given by the user
-    console.log(inputList); // to make sure inputList is still recognized
-
     function testInput(i) { // if a inputvalue is falsey the i will skip to the next item in the nested object to compare
       while (i <= 5){
       if (inputList[i] !== "" || undefined) {
-        console.log(`k equals: ${k = k + 1}`);  // to show list index values
-        console.log(`variable i defined: ${i}`); // to show i values
-        console.log(`input value ${inputList[i]}`) // to show input item
-        defineditems[k] = i; // to store undefined into values into a list
-        return i = i; } 
+          // console.log(`k equals: ${k = k + 1}`);  // to show list index values
+          console.log(`variable i defined: ${i}`); // to show i values
+          console.log(`input value ${inputList[i]}`) // to show input item
+          defineditems.push(i);
+        return i = i; 
+        } 
       else {
         console.log(`variable i undefined: ${inputList[i]}`);
         return i = i + 1;
+        }
       }
-    }
-  }; // expect output: variable i per conditions
-  testInput(i); // to run function and store i -- not useful beyond this point 
-  console.log(`array of defined indexes: ${arrayofIndexValues = new Array(defineditems)}`);
+    }; // expect output: variable i per conditions
 
+  testInput(i); // to run function and store i -- not useful beyond this point
+  }; 
+
+  console.log(`array of defined indexes: ${defineditems}`);
+  console.log(`type of defineditems: ${typeof(defineditems)}`);
   // we need to create a new array of index values that are defined
-  //by holding the index of the values that are defined, we can iterate through that for the final filtered Data
-}
-  console.log(`array of input: ${arrayofIndexValues}`); // new array iterate variable per conditions 
   
-  for (a = 0; a <= arrayofIndexValues.length ; a++) { // we need the loop for when there is more than 1 value in the array
-    console.log(arrayofIndexValues[a]);
-    var placementvalue = arrayofIndexValues[a]; // placement value takes the index of the 'arrayofindexvalues' that were defined and uses it in the filter. 
-    console.log(filteredData = filteredData.filter(obj => obj[Object.keys(obj)[placementvalue]] === inputList[placementvalue]))
-  }
+  //by holding the index of the values that are defined, we can iterate through that for the final filtered Data
 
-  console.log(filteredData);
-  console.log('next item!')
+  for (a = 0; a < defineditems.length ; a++) { // we need the loop for when there is more than 1 value in the array
+    console.log(defineditems[a]);
+
+    var objects = filteredData[0];
+    console.log(inputList);
+    console.log(objects[Object.keys(objects)[defineditems[a]]]);
+    console.log(inputList[defineditems[a]]);
+
+    console.log(filteredData = filteredData.filter(obj => obj[Object.keys(obj)[defineditems[a]]] === inputList[defineditems[a]])); 
+    };
+
   generateTable(filteredData);
-
   console.log("data filtered")
 }; 
 
